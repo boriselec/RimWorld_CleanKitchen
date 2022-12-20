@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using Verse;
 
-namespace CommonSense
+namespace CleanKitchen
 {
     public class Settings : ModSettings
     {

@@ -7,7 +7,7 @@
     <ProjectGuid>{674B538C-8A9D-4D0C-BE86-D3F5F79CCDCE}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CommonSense</RootNamespace>
+    <RootNamespace>CleanKitchen</RootNamespace>
     <AssemblyName>CleanKitchen</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
