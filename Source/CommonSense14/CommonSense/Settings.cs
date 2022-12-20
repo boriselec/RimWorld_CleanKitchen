@@ -5,41 +5,41 @@ namespace CommonSense
 {
     public class Settings : ModSettings
     {
-        public static bool separate_meals = true;
-        public static bool fulfill_outdoors = true;
+        public static bool separate_meals = false;
+        public static bool fulfill_outdoors = false;
         //public static bool odd_is_normal = false;
-        public static bool clean_before_work = true;
-        public static bool clean_after_tending = true;
-        public static bool calculate_full_path = true;
+        public static bool clean_before_work = false;
+        public static bool clean_after_tending = false;
+        public static bool calculate_full_path = false;
         public static bool add_meal_ingredients = false;
-        public static bool add_to_que = true;
-        public static bool hauling_over_bills = true;
-        public static bool drugs_use_potential_mood = true;
+        public static bool add_to_que = false;
+        public static bool hauling_over_bills = false;
+        public static bool drugs_use_potential_mood = false;
         public static bool adv_cleaning = true;
-        public static bool adv_haul_all_ings = true;
-        public static bool gui_extended_recipe = true;
-        public static bool prefer_spoiling_ingredients = true;
-        public static bool prefer_spoiling_meals = true;
+        public static bool adv_haul_all_ings = false;
+        public static bool gui_extended_recipe = false;
+        public static bool prefer_spoiling_ingredients = false;
+        public static bool prefer_spoiling_meals = false;
         //public static bool allow_feeding_with_plants = true;
-        public static bool gui_manual_unload = true;
-        public static bool put_back_to_inv = true;
-        public static bool pick_proper_amount = true;
-        public static bool fun_police = true;
+        public static bool gui_manual_unload = false;
+        public static bool put_back_to_inv = false;
+        public static bool pick_proper_amount = false;
+        public static bool fun_police = false;
         public static int op_clean_num = 5;
         public static int adv_clean_num = 5;
         public static int doc_clean_num = 0;
-        public static bool skip_snow_clean = true;
+        public static bool skip_snow_clean = false;
         private static Vector2 ScrollPos = Vector2.zero;
-        public static bool give_sick_joy_drugs = true;
-        public static bool social_relax_economy = true;
+        public static bool give_sick_joy_drugs = false;
+        public static bool social_relax_economy = false;
         public static bool adv_cleaning_ingest = false;
         public static bool mood_regen = false;
         public static bool safe_wander = false;
         public static bool polite_wander = false;
-        public static bool ingest_any_drugs = true;
-        public static bool clean_gizmo = false;
-        public static bool meditation_economy = true;
-        public static bool adv_respect_capacity = true;
+        public static bool ingest_any_drugs = false;
+        public static bool clean_gizmo = true;
+        public static bool meditation_economy = false;
+        public static bool adv_respect_capacity = false;
 
         public static void DoSettingsWindowContents(Rect inRect)
         {
@@ -112,36 +112,36 @@ namespace CommonSense
         public override void ExposeData()
         {
             base.ExposeData();
-            Scribe_Values.Look(ref separate_meals, "separate_meals", true, false);
-            Scribe_Values.Look(ref fulfill_outdoors, "fulfill_outdoors", true, false);
-            //Scribe_Values.Look(ref odd_is_normal, "odd_is_normal", false, false);
-            Scribe_Values.Look(ref clean_before_work, "clean_before_work", true, false);
-            Scribe_Values.Look(ref clean_after_tending, "clean_after_tending", true, false);
-            Scribe_Values.Look(ref calculate_full_path, "calculate_full_path", true, false);
-            Scribe_Values.Look(ref add_meal_ingredients, "add_meal_ingredients", false, false);
-            Scribe_Values.Look(ref drugs_use_potential_mood, "drugs_use_potential_mood", true, false);
-            Scribe_Values.Look(ref adv_cleaning, "adv_cleaning", true, false);
-            Scribe_Values.Look(ref adv_haul_all_ings, "adv_haul_all_ings", true, false);
-            Scribe_Values.Look(ref gui_extended_recipe, "extended_recipe", true, false);
-            Scribe_Values.Look(ref prefer_spoiling_ingredients, "prefer_spoiling_ingredients", true, false);
-            Scribe_Values.Look(ref prefer_spoiling_meals, "prefer_spoiling_meals", true, false);
-            Scribe_Values.Look(ref gui_manual_unload, "gui_manual_unload", true, false);
-            Scribe_Values.Look(ref put_back_to_inv, "put_back_to_inv", true, false);
-            Scribe_Values.Look(ref pick_proper_amount, "pick_proper_amount", true, false);
-            Scribe_Values.Look(ref fun_police, "fun_police", true, false);
-            Scribe_Values.Look(ref hauling_over_bills, "hauling_over_bills", true, false);
-            Scribe_Values.Look(ref op_clean_num, "op_clean_num", 5, false);
-            Scribe_Values.Look(ref adv_clean_num, "adv_clean_num", 5, false);
-            Scribe_Values.Look(ref doc_clean_num, "doc_clean_num", 0, false);
-            Scribe_Values.Look(ref skip_snow_clean, "skip_snow_clean", true, false);
-            Scribe_Values.Look(ref give_sick_joy_drugs, "give_sick_joy_drugs", true, false);
-            Scribe_Values.Look(ref social_relax_economy, "social_relax_economy", true, false);
-            Scribe_Values.Look(ref adv_cleaning_ingest, "adv_cleaning_ingest", false, false);
-            Scribe_Values.Look(ref mood_regen, "mood_regen", false, false);
-            Scribe_Values.Look(ref safe_wander, "safe_wander", false, false);
-            Scribe_Values.Look(ref polite_wander, "polite_wander", safe_wander, false);
-            Scribe_Values.Look(ref ingest_any_drugs, "ingest_any_drugs", true, false);
-            Scribe_Values.Look(ref clean_gizmo, "clean_gizmo", false, false);
+            Scribe_Values.Look(ref separate_meals, "separate_meals");
+            Scribe_Values.Look(ref fulfill_outdoors, "fulfill_outdoors");
+            //Scribe_Values.Look(ref odd_is_normal, "odd_is_normal");
+            Scribe_Values.Look(ref clean_before_work, "clean_before_work");
+            Scribe_Values.Look(ref clean_after_tending, "clean_after_tending");
+            Scribe_Values.Look(ref calculate_full_path, "calculate_full_path");
+            Scribe_Values.Look(ref add_meal_ingredients, "add_meal_ingredients");
+            Scribe_Values.Look(ref drugs_use_potential_mood, "drugs_use_potential_mood");
+            Scribe_Values.Look(ref adv_cleaning, "adv_cleaning");
+            Scribe_Values.Look(ref adv_haul_all_ings, "adv_haul_all_ings");
+            Scribe_Values.Look(ref gui_extended_recipe, "extended_recipe");
+            Scribe_Values.Look(ref prefer_spoiling_ingredients, "prefer_spoiling_ingredients");
+            Scribe_Values.Look(ref prefer_spoiling_meals, "prefer_spoiling_meals");
+            Scribe_Values.Look(ref gui_manual_unload, "gui_manual_unload");
+            Scribe_Values.Look(ref put_back_to_inv, "put_back_to_inv");
+            Scribe_Values.Look(ref pick_proper_amount, "pick_proper_amount");
+            Scribe_Values.Look(ref fun_police, "fun_police");
+            Scribe_Values.Look(ref hauling_over_bills, "hauling_over_bills");
+            Scribe_Values.Look(ref op_clean_num, "op_clean_num");
+            Scribe_Values.Look(ref adv_clean_num, "adv_clean_num");
+            Scribe_Values.Look(ref doc_clean_num, "doc_clean_num");
+            Scribe_Values.Look(ref skip_snow_clean, "skip_snow_clean");
+            Scribe_Values.Look(ref give_sick_joy_drugs, "give_sick_joy_drugs");
+            Scribe_Values.Look(ref social_relax_economy, "social_relax_economy");
+            Scribe_Values.Look(ref adv_cleaning_ingest, "adv_cleaning_ingest");
+            Scribe_Values.Look(ref mood_regen, "mood_regen");
+            Scribe_Values.Look(ref safe_wander, "safe_wander");
+            Scribe_Values.Look(ref polite_wander, "polite_wander");
+            Scribe_Values.Look(ref ingest_any_drugs, "ingest_any_drugs");
+            Scribe_Values.Look(ref clean_gizmo, "clean_gizmo");
         }
     }
 }
