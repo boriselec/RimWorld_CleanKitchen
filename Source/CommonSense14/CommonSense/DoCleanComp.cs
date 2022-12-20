@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Verse;
 using RimWorld;
 using UnityEngine;
@@ -29,6 +30,13 @@ namespace CommonSense
                 }
                 this.active = value;
             }
+        }
+
+        public override void Initialize(CompProperties props)
+        {
+            // enabled when "cook simple meal" recipe available on worktable
+            this.active = (parent.def.recipes ?? new List<RecipeDef>())
+                .Exists(r => "CookMealSimple".Equals(r.defName));
         }
 
         public override void PostExposeData()
