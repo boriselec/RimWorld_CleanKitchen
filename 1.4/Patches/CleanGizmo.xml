@@ -10,7 +10,7 @@
 				
 			<li Class="PatchOperationAdd">
 				<xpath>Defs/ThingDef[inspectorTabs/li="ITab_Bills"]/comps</xpath>
-				<value><li><compClass>CommonSense.DoCleanComp</compClass></li></value>
+				<value><li><compClass>CleanKitchen.DoCleanComp</compClass></li></value>
 			</li>
 		</operations>
 	</Operation>
