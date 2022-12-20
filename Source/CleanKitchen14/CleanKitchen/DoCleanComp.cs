@@ -4,7 +4,7 @@ using Verse;
 using RimWorld;
 using UnityEngine;
 
-namespace CommonSense
+namespace CleanKitchen
 {
     public class CleanCommand_Toggle : Command_Toggle
     {

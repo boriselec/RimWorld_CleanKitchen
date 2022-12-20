@@ -6,7 +6,7 @@ using Verse;
 using Verse.AI;
 using UnityEngine;
 
-namespace CommonSense
+namespace CleanKitchen
 {
     [StaticConstructorOnStartup]
     public static class Utility

@@ -4,27 +4,27 @@ using Verse;
 using UnityEngine;
 using RimWorld;
 
-namespace CommonSense
+namespace CleanKitchen
 {
     [StaticConstructorOnStartup]
-    public class CommonSense : Mod
+    public class CleanKitchen : Mod
     {
         public static Settings Settings;
-        public CommonSense(ModContentPack content) : base(content)
+        public CleanKitchen(ModContentPack content) : base(content)
         {
-            var harmony = new Harmony("net.avilmask.rimworld.mod.CommonSense");
+            var harmony = new Harmony("com.boriselec.rimworld.mod.CleanKitchen");
             harmony.PatchAll(Assembly.GetExecutingAssembly());
             base.GetSettings<Settings>();
         }
         
         public void Save()
         {
-            LoadedModManager.GetMod<CommonSense>().GetSettings<Settings>().Write();
+            LoadedModManager.GetMod<CleanKitchen>().GetSettings<Settings>().Write();
         }
 
         public override string SettingsCategory()
         {
-            return "CommonSense";
+            return "CleanKitchen";
         }
 
         public override void DoSettingsWindowContents(Rect inRect)

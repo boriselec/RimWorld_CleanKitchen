@@ -10,11 +10,11 @@ using System;
 using UnityEngine;
 
 
-namespace CommonSense
+namespace CleanKitchen
 {
     //protected override IEnumerable<Toil> JobDriver_DoBill.MakeNewToils()
     [HarmonyPatch(typeof(JobDriver_DoBill), "MakeNewToils")]
-    static class JobDriver_DoBill_MakeNewToils_CommonSensePatch
+    static class JobDriver_DoBill_MakeNewToils_CleanPatch
     {
         static MethodInfo LJumpIfTargetInsideBillGiver = AccessTools.Method(typeof(JobDriver_DoBill), "JumpIfTargetInsideBillGiver");
 
