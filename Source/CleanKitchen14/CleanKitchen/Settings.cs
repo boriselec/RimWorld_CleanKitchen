@@ -7,7 +7,6 @@ namespace CleanKitchen
     {
         public static bool adv_cleaning = true;
         public static int adv_clean_num = 0;
-        public static bool clean_gizmo = true;
 
         public static void DoSettingsWindowContents(Rect inRect)
         {
@@ -24,7 +23,6 @@ namespace CleanKitchen
             base.ExposeData();
             Scribe_Values.Look(ref adv_cleaning, "adv_cleaning");
             Scribe_Values.Look(ref adv_clean_num, "adv_clean_num");
-            Scribe_Values.Look(ref clean_gizmo, "clean_gizmo");
         }
     }
 }
