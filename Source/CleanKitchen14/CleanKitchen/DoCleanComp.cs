@@ -8,10 +8,6 @@ namespace CleanKitchen
 {
     public class CleanCommand_Toggle : Command_Toggle
     {
-        public override bool Visible
-        {
-            get { return Settings.clean_gizmo; }
-        }
     }
 
     public class DoCleanComp : ThingComp
