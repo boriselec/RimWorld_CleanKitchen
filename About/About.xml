@@ -4,6 +4,7 @@
 	<author>boriselec</author>
 	<supportedVersions>
 		<li>1.4</li>
+		<li>1.5</li>
 	</supportedVersions>
 	<url>none</url>
 	<packageId>boriselec.CleanKitchen</packageId>
