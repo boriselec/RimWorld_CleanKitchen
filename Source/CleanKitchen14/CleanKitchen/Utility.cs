@@ -14,6 +14,7 @@ namespace CleanKitchen
         public static readonly Texture2D texMoteClean = ContentFinder<Texture2D>.Get("Things/Mote/Clean");
 
         private static WorkGiverDef cleanFilth = null;
+        private static WorkGiverDef CleanFilth { get { return cleanFilth ?? (cleanFilth = DefDatabase<WorkGiverDef>.GetNamed("CleanFilth")); } }
         public const byte largeRoomSize = 160;
 
         private static WorkTypeDef fCleaningDef = null;
@@ -31,23 +32,27 @@ namespace CleanKitchen
 
         public static bool IncapableOfCleaning(Pawn pawn)
         {
-            return pawn.def.race == null ||
-                (int)pawn.def.race.intelligence < 2 ||
-                pawn.Faction != Faction.OfPlayer ||
-                (int)pawn.RaceProps.intelligence < 2 ||
-                pawn.WorkTagIsDisabled(WorkTags.ManualDumb | WorkTags.Cleaning) ||
-                pawn.InMentalState || pawn.IsBurning() ||
-                pawn.workSettings == null || !pawn.workSettings.WorkIsActive(CleaningDef);
+            return pawn.def.race == null
+                || pawn.RaceProps.intelligence < Intelligence.ToolUser
+                //|| pawn.def.race.intelligence < Intelligence.ToolUser
+                || pawn.Faction != Find.FactionManager.OfPlayer//Faction.OfPlayer
+                || pawn.workSettings == null
+                || !pawn.workSettings.Initialized
+                || !pawn.workSettings.WorkIsActive(CleaningDef)
+                || pawn.WorkTypeIsDisabled(CleaningDef)
+                || pawn.InMentalState || pawn.IsBurning();
         }
 
         public static IEnumerable<Filth> SelectAllFilth(Pawn pawn, LocalTargetInfo target, int Limit = int.MaxValue)
         {
             Room room = null;
             if (target.Thing == null)
-                if (target.Cell == null)
+            {
+                if((room = GridsUtility.GetRoom(target.Cell, pawn.Map)) == null)//(target.Cell == null)
                     Log.Error("Invalid target: cell or thing it must be");
-                else
-                    room = GridsUtility.GetRoom(target.Cell, pawn.Map);
+                //else
+                //    room = GridsUtility.GetRoom(target.Cell, pawn.Map);
+             }
             else
                 room = target.Thing.GetRoom();
 
@@ -58,8 +63,11 @@ namespace CleanKitchen
             if (pathGrid == null)
                 return new List<Filth>();
 
-            if (cleanFilth == null)
-                cleanFilth = DefDatabase<WorkGiverDef>.GetNamed("CleanFilth");
+            var cleanFilth = CleanFilth;
+            //if (cleanFilth == null)
+            //{
+            //    cleanFilth = DefDatabase<JobDef>.GetNamed('Clean').driverClass; //DefDatabase<WorkGiverDef>.GetNamed("CleanFilth");
+            //}
 
             if (cleanFilth.Worker == null)
                 return new List<Filth>();
@@ -72,8 +80,15 @@ namespace CleanKitchen
                 {
                     IntVec3 intVec = target.Cell + GenRadial.RadialPattern[i];
                     if (intVec.InBounds(pawn.Map) && intVec.InAllowedArea(pawn) && (intVec.GetRoom(pawn.Map) == room || intVec.GetDoor(pawn.Map) != null))
-                        ((List<Filth>)enumerable).AddRange(intVec.GetThingList(pawn.Map).OfType<Filth>().Where(f => !f.Destroyed
-                            && ((WorkGiver_Scanner)cleanFilth.Worker).HasJobOnThing(pawn, f)).Take(Limit == 0 ? int.MaxValue : Limit));
+                    {
+                        ((List<Filth>)enumerable)
+                        .AddRange(intVec.GetThingList(pawn.Map).OfType<Filth>()
+                            .Where(
+                                f => !f.Destroyed
+                                && ((WorkGiver_Scanner)cleanFilth.Worker).HasJobOnThing(pawn, f)
+                            ).Take(Limit == 0 ? int.MaxValue : Limit)
+                        );
+                    }
                     if (Limit > 0 && enumerable.Count() >= Limit)
                         break;
                 }
@@ -114,15 +129,15 @@ namespace CleanKitchen
 
                 if (Starter != null)
                 {
-                    if (q[0].Cell == null)
-                        n = int.MaxValue;
-                    else
+                    //if (q[0].Cell == null)
+                    //    n = int.MaxValue;
+                    //else
                         n = q[0].Cell.DistanceToSquared(Starter.Position);
 
                     for (int i = 1; i < q.Count(); i++)
                     {
-                        if (q[i].Cell == null)
-                            continue;
+                        //if (q[i].Cell == null)
+                        //    continue;
                         x = q[i].Cell.DistanceToSquared(Starter.Position);
                         if (Math.Abs(x) < Math.Abs(n))
                         {
@@ -141,15 +156,15 @@ namespace CleanKitchen
 
                 for (int i = 0; i < q.Count() - 1; i++)
                 {
-                    if (q[i + 1].Cell == null)
-                        continue;
+                    //if (q[i + 1].Cell == null)
+                    //    continue;
 
                     n = q[i].Cell.DistanceToSquared(q[i + 1].Cell);
                     idx = i + 1;
                     for (int c = i + 2; c < q.Count(); c++)
                     {
-                        if (q[c].Cell == null)
-                            continue;
+                        //if (q[c].Cell == null)
+                        //    continue;
 
                         x = q[i].Cell.DistanceToSquared(q[c].Cell);
                         if (Math.Abs(x) < Math.Abs(n))
