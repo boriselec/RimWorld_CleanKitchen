@@ -3,10 +3,7 @@ using HarmonyLib;
 using RimWorld;
 using Verse;
 using Verse.AI;
-using System.Linq;
 using System.Reflection;
-using System.Reflection.Emit;
-using System;
 using UnityEngine;
 
 
@@ -16,9 +13,14 @@ namespace CleanKitchen
     [HarmonyPatch(typeof(JobDriver_DoBill), "MakeNewToils")]
     static class JobDriver_DoBill_MakeNewToils_CleanPatch
     {
-        static MethodInfo LJumpIfTargetInsideBillGiver = AccessTools.Method(typeof(JobDriver_DoBill), "JumpIfTargetInsideBillGiver");
+        internal static bool Prepare()
+        {
+            return Settings.adv_cleaning;
+        }
 
-        static IEnumerable<Toil> DoMakeToils(JobDriver_DoBill __instance)
+        private static readonly MethodInfo LJumpIfTargetInsideBillGiver = AccessTools.Method(typeof(JobDriver_DoBill), "JumpIfTargetInsideBillGiver");
+
+        private static IEnumerable<Toil> DoMakeToils(JobDriver_DoBill __instance)
         {
             //normal scenario
             __instance.AddEndCondition(delegate
@@ -33,11 +35,10 @@ namespace CleanKitchen
             __instance.FailOnBurningImmobile(TargetIndex.A);
             __instance.FailOn(delegate ()
             {
-                if (__instance.job.GetTarget(TargetIndex.A).Thing is Filth)
+                if (__instance.job.GetTarget(TargetIndex.A).Thing is Filth) //mod
                     return false;
 
-                IBillGiver billGiver = __instance.job.GetTarget(TargetIndex.A).Thing as IBillGiver;
-                if (billGiver != null)
+                if (__instance.job.GetTarget(TargetIndex.A).Thing is IBillGiver billGiver)
                 {
                     if (__instance.job.bill.DeletedOrDereferenced)
                     {
@@ -50,6 +51,7 @@ namespace CleanKitchen
                 }
                 return false;
             });
+
             bool placeInBillGiver = __instance.BillGiver is Building_MechGestator;
             Toil gotoBillGiver = Toils_Goto.GotoThing(TargetIndex.A, PathEndMode.InteractionCell);
             Toil toil = ToilMaker.MakeToil("MakeNewToils");
@@ -57,8 +59,7 @@ namespace CleanKitchen
             {
                 if (__instance.job.targetQueueB != null && __instance.job.targetQueueB.Count == 1)
                 {
-                    UnfinishedThing unfinishedThing = __instance.job.targetQueueB[0].Thing as UnfinishedThing;
-                    if (unfinishedThing != null)
+                    if (__instance.job.targetQueueB[0].Thing is UnfinishedThing unfinishedThing)
                     {
                         unfinishedThing.BoundBill = (Bill_ProductionWithUft)__instance.job.bill;
                     }
@@ -79,27 +80,23 @@ namespace CleanKitchen
 
                 if (thing.holdingOwner != null)
                 {
-                    int count = /*curJob.count == -1 ? thing.stackCount :*/ Mathf.Min(curJob.count, actor.carryTracker.AvailableStackSpace(thing.def), thing.stackCount);
-                    //Log.Message($"{actor}, {thing} ,count ({count}) = {curJob.count}, {actor.carryTracker.AvailableStackSpace(thing.def)}, {thing.stackCount}");
-                    if (count < 1)
-                        return;
+                    int count = Mathf.Min(curJob.count, actor.carryTracker.AvailableStackSpace(thing.def), thing.stackCount);
+                    if (count < 1) return;
 
                     var owner = thing.holdingOwner;
                     Map rootMap = ThingOwnerUtility.GetRootMap(owner.Owner);
                     IntVec3 rootPosition = ThingOwnerUtility.GetRootPosition(owner.Owner);
                     if (rootMap == null || !rootPosition.IsValid)
                         return;
-                    //Log.Message($"{actor} trying to drop {thing}");
                     if (owner.TryDrop(thing, ThingPlaceMode.Near, count, out var droppedThing))
                     {
-                        //Log.Message($"{actor} dropped {thing}");
                         curJob.SetTarget(TargetIndex.B, droppedThing);
                     }
                 }
             };
             DropTargetThingIfInInventory.defaultCompleteMode = ToilCompleteMode.Instant;
 
-            foreach (Toil toil2 in JobDriver_DoBill.CollectIngredientsToils(TargetIndex.B, TargetIndex.A, TargetIndex.C, false, true, __instance.BillGiver is Building_MechGestator))
+            foreach (Toil toil2 in JobDriver_DoBill.CollectIngredientsToils(TargetIndex.B, TargetIndex.A, TargetIndex.C, false, true, __instance.BillGiver is Building_WorkTableAutonomous))
             {
                 yield return toil2;
                 if (toil2.debugName == "JumpIfTargetInsideBillGiver")
@@ -139,17 +136,23 @@ namespace CleanKitchen
                     Filth filth = clean.actor.jobs.curJob.GetTarget(TargetIndex.A).Thing as Filth;
                     __instance.billStartTick = 0;
                     __instance.ticksSpentDoingRecipeWork = 0;
-                    __instance.workLeft = filth.def.filth.cleaningWorkToReduceThickness * filth.thickness;
+                    __instance.workLeft = filth.def.filth.cleaningWorkToReduceThickness * filth.thickness * 100;
                 };
                 clean.tickAction = delegate ()
                 {
                     Filth filth = clean.actor.jobs.curJob.GetTarget(TargetIndex.A).Thing as Filth;
-                    __instance.billStartTick += 1;
-                    __instance.ticksSpentDoingRecipeWork += 1;
-                    if (__instance.billStartTick > filth.def.filth.cleaningWorkToReduceThickness)
+                    float statValueAbstract = filth.Position.GetTerrain(filth.Map).GetStatValueAbstract(StatDefOf.CleaningTimeFactor, null);
+                    float num = clean.actor.GetStatValue(StatDefOf.CleaningSpeed, true, -1);
+                    if (statValueAbstract != 0f)
+                    {
+                        num /= statValueAbstract;
+                    }
+                    __instance.billStartTick += Mathf.Max(1, Mathf.RoundToInt(num * 100));
+                    __instance.ticksSpentDoingRecipeWork += Mathf.Max(1, Mathf.RoundToInt(num * 100));
+                    if (__instance.billStartTick > filth.def.filth.cleaningWorkToReduceThickness * 100)
                     {
                         filth.ThinFilth();
-                        __instance.billStartTick = 0;
+                        __instance.billStartTick -= (int)(filth.def.filth.cleaningWorkToReduceThickness * 100);
                         if (filth.Destroyed)
                         {
                             clean.actor.records.Increment(RecordDefOf.MessesCleaned);
@@ -174,27 +177,11 @@ namespace CleanKitchen
             yield return Toils_Recipe.DoRecipeWork().FailOnDespawnedNullOrForbiddenPlacedThings(TargetIndex.A).FailOnCannotTouch(TargetIndex.A, PathEndMode.InteractionCell);
             yield return Toils_Recipe.CheckIfRecipeCanFinishNow();
             yield return Toils_Recipe.FinishRecipeAndStartStoringProduct(TargetIndex.None);
-            if (!__instance.job.RecipeDef.products.NullOrEmpty<ThingDefCountClass>() || !__instance.job.RecipeDef.specialProducts.NullOrEmpty<SpecialProductType>())
-            {
-                yield return Toils_Reserve.Reserve(TargetIndex.B, 1, -1, null);
-                Toil carryToCell = Toils_Haul.CarryHauledThingToCell(TargetIndex.B, PathEndMode.ClosestTouch);
-                yield return carryToCell;
-                yield return Toils_Haul.PlaceHauledThingInCell(TargetIndex.B, carryToCell, true, true);
-                var t = ToilMaker.MakeToil("MakeNewToils");
-                t.initAction = delegate ()
-                {
-                    Bill_Production bill_Production = t.actor.jobs.curJob.bill as Bill_Production;
-                    if (bill_Production != null && bill_Production.repeatMode == BillRepeatModeDefOf.TargetCount)
-                    {
-                        __instance.pawn.MapHeld.resourceCounter.UpdateResourceCounts();
-                    }
-                };
-                yield return t;
-            }
+            //
             yield break;
         }
 
-        public static bool Prefix(ref IEnumerable<Toil> __result, ref JobDriver_DoBill __instance)
+        internal static bool Prefix(ref IEnumerable<Toil> __result, ref JobDriver_DoBill __instance)
         {
             if (!Settings.adv_cleaning)
                 return true;
