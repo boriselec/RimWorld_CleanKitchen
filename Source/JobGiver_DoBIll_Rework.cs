@@ -13,10 +13,7 @@ namespace CleanKitchen
     [HarmonyPatch(typeof(JobDriver_DoBill), "MakeNewToils")]
     static class JobDriver_DoBill_MakeNewToils_CleanPatch
     {
-        internal static bool Prepare()
-        {
-            return Settings.adv_cleaning;
-        }
+        private const int adv_clean_num = 0;
 
         private static readonly MethodInfo LJumpIfTargetInsideBillGiver = AccessTools.Method(typeof(JobDriver_DoBill), "JumpIfTargetInsideBillGiver");
 
@@ -104,7 +101,7 @@ namespace CleanKitchen
             }
 
             //cleaning patch
-            if (Settings.adv_cleaning && !Utility.IncapableOfCleaning(__instance.pawn))
+            if (!Utility.IncapableOfCleaning(__instance.pawn))
             {
                 Toil FilthList = new Toil();
                 FilthList.initAction = delegate ()
@@ -116,7 +113,7 @@ namespace CleanKitchen
 
                         if (A.Thing?.TryGetComp<DoCleanComp>()?.Active == true)
                         {
-                            IEnumerable<Filth> l = Utility.SelectAllFilth(FilthList.actor, A, Settings.adv_clean_num);
+                            IEnumerable<Filth> l = Utility.SelectAllFilth(FilthList.actor, A, adv_clean_num);
                             Utility.AddFilthToQueue(curJob, TargetIndex.A, l, FilthList.actor);
                             FilthList.actor.ReserveAsManyAsPossible(curJob.GetTargetQueue(TargetIndex.A), curJob);
                         }
@@ -183,9 +180,6 @@ namespace CleanKitchen
 
         internal static bool Prefix(ref IEnumerable<Toil> __result, ref JobDriver_DoBill __instance)
         {
-            if (!Settings.adv_cleaning)
-                return true;
-
             __result = DoMakeToils(__instance);
             return false;
         }
